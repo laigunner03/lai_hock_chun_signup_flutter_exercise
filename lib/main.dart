@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
-
+    
 
   final String title;
 
@@ -34,17 +34,13 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController email = TextEditingController();
   TextEditingController name = TextEditingController();
   TextEditingController password = TextEditingController();
-  //final String image_url = "https://image.pngaaa.com/24/968024-middle.png";
+  final String image_url = "https://fiverr-res.cloudinary.com/w_280,f_auto,q_auto/attachments/generic_asset/asset/f7d61bd27b87eb26cc5a1730decf65fa-1577009326000/Foxit.png";
   bool isButtonEnabled = false;
 
 
   //Drop-down-value
   String dropdownvalue = 'Select Gender';
   List<String> items =  ['Select Gender','Male','Female','Prefer not to say'];
-
-  var children;
-
-
 
  @override
   void dispose() {
@@ -85,8 +81,7 @@ late bool _isFullyEntered = false;
     return true;
   }
 
-
-   late bool isLoggedIn = false;
+late bool isLoggedIn = false;
   
   late String emaillogin = '';
 
@@ -95,7 +90,7 @@ late bool _isFullyEntered = false;
   void autoLogIn() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? emailId = prefs.getString('email');
-
+    print(emailId);
     if (emailId != null) {
       Navigator.push(
       context,
@@ -105,7 +100,7 @@ late bool _isFullyEntered = false;
 
   Future<Null> logout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('username', '');
+    prefs.setString('email', '');
 
     setState(() {
       emaillogin = '';
@@ -115,21 +110,23 @@ late bool _isFullyEntered = false;
 
   Future<Null> loginUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('email', emaillogin);
+    prefs.setString('email', email.text);
 
     setState(() {
-      email.text = emaillogin;
+      emaillogin = email.text;
       isLoggedIn = true;
     });
 
     email.clear();
   }
+  
 
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // scaffoldMessengerKey: scaffoldMessengerKey,
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -159,8 +156,8 @@ late bool _isFullyEntered = false;
                   width: 240.0,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage(
-                          '/home/lai/Besquare/3-Mobile-Dev/lai_hock_chun_signup_flutter_exercise/Foxit.png'),
+                      image: NetworkImage(
+                         image_url),
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -243,14 +240,8 @@ late bool _isFullyEntered = false;
                     foregroundColor: _isFullyEntered ? MaterialStateProperty.all<Color>(Colors.green) :MaterialStateProperty.all<Color>(Colors.red),
                     ),
                     
-
-                // onPressed: () {
-                //                 isLoggedIn ? logout() : loginUser();                
-                //               },
-
-
-              onPressed:_isFullyEntered ? () {
-                isLoggedIn ? logout() : loginUser(); 
+             onPressed:_isFullyEntered ? () {
+               isLoggedIn ? logout() : loginUser();
               Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Mainpage()),
@@ -266,6 +257,6 @@ late bool _isFullyEntered = false;
         ),
     );
   }
- 
-
 }
+
+
