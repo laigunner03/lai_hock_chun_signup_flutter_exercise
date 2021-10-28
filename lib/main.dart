@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lai_hock_chun_signup_flutter_exercise/mainpage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Sign Up',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -32,11 +34,17 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController email = TextEditingController();
   TextEditingController name = TextEditingController();
   TextEditingController password = TextEditingController();
-
+  //final String image_url = "https://image.pngaaa.com/24/968024-middle.png";
   bool isButtonEnabled = false;
 
+
+  //Drop-down-value
   String dropdownvalue = 'Select Gender';
   List<String> items =  ['Select Gender','Male','Female','Prefer not to say'];
+
+  var children;
+
+
 
  @override
   void dispose() {
@@ -64,6 +72,8 @@ late bool _isFullyEntered = false;
       _isFullyEntered = _checkFullyEntered(password.text);
       setState((){});
     });
+
+    autoLogIn();
   }
 
   bool _checkFullyEntered(String text){
@@ -76,6 +86,46 @@ late bool _isFullyEntered = false;
   }
 
 
+   late bool isLoggedIn = false;
+  
+  late String emaillogin = '';
+
+
+
+  void autoLogIn() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? emailId = prefs.getString('email');
+
+    if (emailId != null) {
+      Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Mainpage()));
+    }
+  }
+
+  Future<Null> logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('username', '');
+
+    setState(() {
+      emaillogin = '';
+      isLoggedIn = false;
+    });
+  }
+
+  Future<Null> loginUser() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('email', emaillogin);
+
+    setState(() {
+      email.text = emaillogin;
+      isLoggedIn = true;
+    });
+
+    email.clear();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -83,19 +133,20 @@ late bool _isFullyEntered = false;
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-
+      body: SafeArea(
+        child: SingleChildScrollView (
         child: Column(
 
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            //Welcome text
+           
             Container(
             child: Text(
               'Welcome to Foxit',
               style: TextStyle(
                           color: Colors.brown.shade400,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
+                        
                           fontSize: 60),
             ),
             
@@ -156,6 +207,7 @@ late bool _isFullyEntered = false;
                   border: OutlineInputBorder(), labelText: 'Password'),
               onSubmitted: (String value) => print(value),
             ),
+                
           ),
                 
           //Gender
@@ -182,23 +234,36 @@ late bool _isFullyEntered = false;
               ),
           ),
 
-
+        
           Container(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-              //color: _isFullyEntered ? Colors.grey : Colors.orange,
               child: 
-             
                ElevatedButton(
                  style: ButtonStyle(
-                    foregroundColor: _isFullyEntered ? MaterialStateProperty.all<Color>(Colors.red) :MaterialStateProperty.all<Color>(Colors.green),
+                    foregroundColor: _isFullyEntered ? MaterialStateProperty.all<Color>(Colors.green) :MaterialStateProperty.all<Color>(Colors.red),
                     ),
-              onPressed:_isFullyEntered ? () {print("Sucessfully submited");} : null,
-              child: Text('Submit'),
+                    
+
+                // onPressed: () {
+                //                 isLoggedIn ? logout() : loginUser();                
+                //               },
+
+
+              onPressed:_isFullyEntered ? () {
+                isLoggedIn ? logout() : loginUser(); 
+              Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Mainpage()),
+                      );
+              } : null,
+              child: Text('Submit', style: TextStyle(color: Colors.white),),
             ),
           ),
-          ],
+              ],
+            ),
+            ) ,
+          
         ),
-      ),
     );
   }
  
